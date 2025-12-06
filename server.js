@@ -15,9 +15,14 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("✅ MongoDB Connected Successfully!"))
     .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
+// --- ROOT ROUTE 
+app.get('/', (req, res) => {
+    res.send("✅ Breathe Wise Backend is Running Successfully!");
+});
+
 // --- API ROUTES ---
 
-// 2. Proxy for OpenAQ (Fixes CORS)
+// 2. Proxy for OpenAQ
 app.get('/api/air-quality', async (req, res) => {
     const { lat, lon } = req.query;
     try {
@@ -61,11 +66,9 @@ app.get('/api/top-polluted', async (req, res) => {
     }
 });
 
-// --- Server Startup (Corrected for Vercel) ---
+// --- Server Startup ---
 const PORT = process.env.PORT || 5000;
 
-// Vercel එකේදි කෙලින්ම listen කරන්නේ නැතුව export කරන්න ඕන.
-// Local (Computer එකේ) දුවනකොට විතරක් listen කරනවා.
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => {
         console.log(`🚀 Server running on port ${PORT}`);
