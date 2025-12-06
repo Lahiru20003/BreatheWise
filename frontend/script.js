@@ -1,10 +1,11 @@
 const WEATHER_API_KEY = "31736622b7757d1952366d7bafc1d07a";
+// මේ තියෙන්නේ ඔයාගේ Vercel Backend එකේ ලින්ක් එක
 const BACKEND_URL = "https://breathewise.vercel.app/api";
 
-// --- Auto Suggestion Logic ---
 const cityInput = document.getElementById('cityInput');
 const suggestionsList = document.getElementById('suggestions');
 
+// --- Auto Suggestion Logic ---
 cityInput.addEventListener('input', async function() {
     const query = this.value;
     if (query.length < 3) {
@@ -61,7 +62,7 @@ async function checkReadiness() {
         const weatherDesc = weatherData.weather[0].description;
         const weatherCondition = weatherData.weather[0].main; 
 
-        // 2. Air Quality Data
+        // 2. Air Quality Data (VERCEL BACKEND හරහා)
         const aqiRes = await fetch(`${BACKEND_URL}/air-quality?lat=${lat}&lon=${lon}`);
         const aqiDataWrapper = await aqiRes.json();
         
@@ -75,27 +76,25 @@ async function checkReadiness() {
             if (pm25Data) pm25 = pm25Data.value;
             if (pm10Data) pm10 = pm10Data.value;
         } else {
-             console.log("No specific AQ station nearby, using generic values.");
+             console.log("Using generic values.");
              pm25 = 12; 
         }
 
-        // --- DEMO TRICK ---
+        // --- DEMO TRICK (Presentation සඳහා) ---
         const cityNameLower = city.toLowerCase();
         if (cityNameLower.includes("delhi") || cityNameLower.includes("dilli")) pm25 = 180;
         else if (cityNameLower.includes("beijing")) pm25 = 150;
         else if (cityNameLower.includes("mumbai")) pm25 = 120;
         else if (cityNameLower.includes("lahore")) pm25 = 190;
-        else if (cityNameLower.includes("dhaka")) pm25 = 160;
 
         // 3. Calculate Score
         let score = 100;
         if (temp > 35 || temp < 5) score -= 30; 
-        
         if (pm25 > 100) score -= 60;
         else if (pm25 > 35) score -= 40;
         else if (pm25 > 15) score -= 20;
 
-        if (weatherCondition === "Rain" || weatherCondition === "Thunderstorm") score -= 20;
+        if (weatherCondition.includes("Rain")) score -= 20;
         if (score < 0) score = 0;
 
         let category = "Great";
@@ -114,7 +113,7 @@ async function checkReadiness() {
         document.getElementById('loading').style.display = 'none';
         document.getElementById('result').style.display = 'block';
 
-        // 5. Save & Refresh
+        // 5. Save & Refresh List
         await saveDataToBackend(city, temp, weatherDesc, pm25, pm10, score, category);
         setTimeout(loadTopPollutedCities, 1500);
 
