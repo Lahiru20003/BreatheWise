@@ -1,11 +1,11 @@
 const WEATHER_API_KEY = "31736622b7757d1952366d7bafc1d07a";
-// මේ තියෙන්නේ ඔයාගේ Vercel Backend එකේ ලින්ක් එක
+// Backend එක Vercel හි ඇති නිසා එම ලින්ක් එක
 const BACKEND_URL = "https://breathewise.vercel.app/api";
 
 const cityInput = document.getElementById('cityInput');
 const suggestionsList = document.getElementById('suggestions');
 
-// --- Auto Suggestion Logic ---
+// --- Auto Suggestion Logic (OpenWeather Geo API) ---
 cityInput.addEventListener('input', async function() {
     const query = this.value;
     if (query.length < 3) {
@@ -51,7 +51,7 @@ async function checkReadiness() {
     document.getElementById('result').style.display = 'none';
 
     try {
-        // 1. Weather Data
+        // 1. Get Weather Data (Frontend -> OpenWeather) [cite: 136]
         const weatherRes = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${WEATHER_API_KEY}&units=metric`);
         const weatherData = await weatherRes.json();
 
@@ -62,7 +62,7 @@ async function checkReadiness() {
         const weatherDesc = weatherData.weather[0].description;
         const weatherCondition = weatherData.weather[0].main; 
 
-        // 2. Air Quality Data (VERCEL BACKEND හරහා)
+        // 2. Get Air Quality Data (Frontend -> Backend Proxy -> OpenAQ) [cite: 136]
         const aqiRes = await fetch(`${BACKEND_URL}/air-quality?lat=${lat}&lon=${lon}`);
         const aqiDataWrapper = await aqiRes.json();
         
@@ -77,24 +77,27 @@ async function checkReadiness() {
             if (pm10Data) pm10 = pm10Data.value;
         } else {
              console.log("Using generic values.");
-             pm25 = 12; 
+             pm25 = 12; // Default Safe Value
         }
 
-        // --- DEMO TRICK (Presentation සඳහා) ---
+        // --- DEMO TRICK (Presentation Logic) ---
+        // ප්‍රධාන නගර සඳහා වැඩි අගයන් බලෙන් ඇතුළත් කිරීම (Demo purpose)
         const cityNameLower = city.toLowerCase();
         if (cityNameLower.includes("delhi") || cityNameLower.includes("dilli")) pm25 = 180;
         else if (cityNameLower.includes("beijing")) pm25 = 150;
         else if (cityNameLower.includes("mumbai")) pm25 = 120;
         else if (cityNameLower.includes("lahore")) pm25 = 190;
 
-        // 3. Calculate Score
+        // 3. Calculate Score (Algorithm) [cite: 140]
         let score = 100;
-        if (temp > 35 || temp < 5) score -= 30; 
+        if (temp > 35 || temp < 5) score -= 30; // උෂ්ණත්වය වැඩි/අඩු නම්
+        
+        // PM2.5 මත ලකුණු කැපීම
         if (pm25 > 100) score -= 60;
         else if (pm25 > 35) score -= 40;
         else if (pm25 > 15) score -= 20;
 
-        if (weatherCondition.includes("Rain")) score -= 20;
+        if (weatherCondition.includes("Rain")) score -= 20; // වැස්ස නම්
         if (score < 0) score = 0;
 
         let category = "Great";
@@ -113,7 +116,7 @@ async function checkReadiness() {
         document.getElementById('loading').style.display = 'none';
         document.getElementById('result').style.display = 'block';
 
-        // 5. Save & Refresh List
+        // 5. Save Data & Refresh Top List
         await saveDataToBackend(city, temp, weatherDesc, pm25, pm10, score, category);
         setTimeout(loadTopPollutedCities, 1500);
 
@@ -143,6 +146,7 @@ async function saveDataToBackend(city, temp, weatherDesc, pm25, pm10, score, cat
     }
 }
 
+// Top 3 Polluted Cities පෙන්වීම
 async function loadTopPollutedCities() {
     const listContainer = document.getElementById('topCitiesList');
     try {

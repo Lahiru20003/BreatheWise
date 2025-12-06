@@ -2,47 +2,42 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const axios = require('axios');
-const Record = require('./models/Record');
+const axios = require('axios'); 
+const Record = require('./models/Record'); 
 
 const app = express();
 
+
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); 
 
-// 1. Database Connection
-if (process.env.MONGO_URI) {
-    mongoose.connect(process.env.MONGO_URI)
-        .then(() => console.log("✅ MongoDB Connected Successfully!"))
-        .catch((err) => console.error("❌ MongoDB Connection Error:", err));
-}
+// 1. Database Connection (MongoDB Atlas)
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log("✅ MongoDB Connected Successfully!"))
+    .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
-// --- ROOT ROUTE ---
+// --- API ROUTES (Endpoints) ---
+
+// Root Route: Server එක වැඩද බලන්න
 app.get('/', (req, res) => {
     res.send("✅ Breathe Wise Backend is Running Successfully!");
 });
 
-// --- API ROUTES ---
+// 2. Proxy Route for OpenAQ (Frontend -> Backend -> OpenAQ)
 
-// 2. Proxy for OpenAQ
 app.get('/api/air-quality', async (req, res) => {
     const { lat, lon } = req.query;
     try {
-        
-        let openAqUrl = `https://api.openaq.org/v2/latest?coordinates=${lat},${lon}&radius=10000&limit=1`;
-        if (process.env.OPENAQ_API_KEY) {
-            openAqUrl += `&api_key=${process.env.OPENAQ_API_KEY}`;
-        }
-        
+        const openAqUrl = `https://api.openaq.org/v2/latest?coordinates=${lat},${lon}&radius=10000&limit=1&api_key=${process.env.OPENAQ_API_KEY}`;
         const response = await axios.get(openAqUrl);
-        res.json(response.data);
+        res.json(response.data); 
     } catch (error) {
         console.error("OpenAQ Error:", error.message);
         res.json({ results: [] }); 
     }
 });
 
-// 3. Save Record
+// 3. Save Data (POST Request) 
 app.post('/api/records', async (req, res) => {
     try {
         const newRecord = new Record(req.body);
@@ -53,7 +48,8 @@ app.post('/api/records', async (req, res) => {
     }
 });
 
-// 4. Get Top 3 Polluted Cities
+// 4. Get Top 3 Polluted Cities (Data Aggregation Logic)
+
 app.get('/api/top-polluted', async (req, res) => {
     try {
         const records = await Record.find().sort({ "airQuality.pm25": -1 }).limit(3);
@@ -63,8 +59,9 @@ app.get('/api/top-polluted', async (req, res) => {
     }
 });
 
-// --- Server Startup (Vercel Compatible) ---
+
 const PORT = process.env.PORT || 5000;
+
 
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => {
@@ -72,4 +69,4 @@ if (process.env.NODE_ENV !== 'production') {
     });
 }
 
-module.exports = app;
+module.exports = app; 

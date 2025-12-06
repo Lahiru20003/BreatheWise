@@ -8,13 +8,13 @@ const RecordSchema = new mongoose.Schema({
         description: String
     },
     airQuality: {
-        pm25: Number,
+        pm25: Number,  
         pm10: Number,
         aqi: Number
     },
-    score: Number,
-    category: String,
-    timestamp: { type: Date, default: Date.now }
+    score: Number,      
+    category: String,   // Great, Be Careful, Avoid
+    timestamp: { type: Date, default: Date.now } 
 });
 
 module.exports = mongoose.model('Record', RecordSchema);
