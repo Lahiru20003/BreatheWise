@@ -1,5 +1,5 @@
 const WEATHER_API_KEY = "31736622b7757d1952366d7bafc1d07a";
-const BACKEND_URL = "http://localhost:5000/api";
+const BACKEND_URL = "https://breathewise.vercel.app/api";
 
 // --- Auto Suggestion Logic ---
 const cityInput = document.getElementById('cityInput');
