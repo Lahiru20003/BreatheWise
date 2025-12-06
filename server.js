@@ -61,7 +61,15 @@ app.get('/api/top-polluted', async (req, res) => {
     }
 });
 
+// --- Server Startup (Corrected for Vercel) ---
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-});
+
+// Vercel එකේදි කෙලින්ම listen කරන්නේ නැතුව export කරන්න ඕන.
+// Local (Computer එකේ) දුවනකොට විතරක් listen කරනවා.
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`🚀 Server running on port ${PORT}`);
+    });
+}
+
+module.exports = app;
