@@ -1,5 +1,5 @@
 const WEATHER_API_KEY = "31736622b7757d1952366d7bafc1d07a";
-// Backend එක Vercel හි ඇති නිසා එම ලින්ක් එක
+
 const BACKEND_URL = "https://breathewise.vercel.app/api";
 
 const cityInput = document.getElementById('cityInput');
@@ -81,7 +81,7 @@ async function checkReadiness() {
         }
 
         // --- DEMO TRICK (Presentation Logic) ---
-        // ප්‍රධාන නගර සඳහා වැඩි අගයන් බලෙන් ඇතුළත් කිරීම (Demo purpose)
+       
         const cityNameLower = city.toLowerCase();
         if (cityNameLower.includes("delhi") || cityNameLower.includes("dilli")) pm25 = 180;
         else if (cityNameLower.includes("beijing")) pm25 = 150;
@@ -90,14 +90,14 @@ async function checkReadiness() {
 
         // 3. Calculate Score (Algorithm) [cite: 140]
         let score = 100;
-        if (temp > 35 || temp < 5) score -= 30; // උෂ්ණත්වය වැඩි/අඩු නම්
+        if (temp > 35 || temp < 5) score -= 30; 
         
-        // PM2.5 මත ලකුණු කැපීම
+       
         if (pm25 > 100) score -= 60;
         else if (pm25 > 35) score -= 40;
         else if (pm25 > 15) score -= 20;
 
-        if (weatherCondition.includes("Rain")) score -= 20; // වැස්ස නම්
+        if (weatherCondition.includes("Rain")) score -= 20; 
         if (score < 0) score = 0;
 
         let category = "Great";
@@ -146,7 +146,7 @@ async function saveDataToBackend(city, temp, weatherDesc, pm25, pm10, score, cat
     }
 }
 
-// Top 3 Polluted Cities පෙන්වීම
+// Top 3 Polluted Cities 
 async function loadTopPollutedCities() {
     const listContainer = document.getElementById('topCitiesList');
     try {

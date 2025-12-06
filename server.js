@@ -18,7 +18,7 @@ mongoose.connect(process.env.MONGO_URI)
 
 // --- API ROUTES (Endpoints) ---
 
-// Root Route: Server එක වැඩද බලන්න
+// Root Route: Server
 app.get('/', (req, res) => {
     res.send("✅ Breathe Wise Backend is Running Successfully!");
 });
