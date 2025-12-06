@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breathe Wise - Outdoor Readiness</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<video autoplay muted loop id="bgVideo">
+    <source src="bg.mp4" type="video/mp4">
+</video>
+
+    <div class="overlay"></div>
+
+    <div class="container">
+        <h1>🌿 Breathe Wise</h1>
+        <p>Check if it's safe to go outdoors based on Weather & Air Quality.</p>
+        
+        <div class="search-box" style="position: relative;">
+            <input type="text" id="cityInput" placeholder="Enter City Name (e.g., Colombo)" autocomplete="off">
+            <ul id="suggestions" class="suggestions-list"></ul>
+            <button onclick="checkReadiness()">Check Readiness</button>
+        </div>
+
+        <p id="loading" style="display:none;">Analyzing data...</p>
+
+        <div id="result" class="result-card" style="display:none;">
+            
+            <h2 id="scoreText">Readiness Score: -</h2>
+            <div id="gauge" class="gauge">Loading...</div>
+            
+            <div class="details">
+                <div class="card">
+                    <h3>🌥 Weather</h3>
+                    <p id="weatherInfo">-</p>
+                </div>
+                <div class="card">
+                    <h3>🌫 Air Quality</h3>
+                    <p id="aqiInfo">-</p>
+                </div>
+            </div>
+            <p id="advice" class="advice-text"></p>
+        </div>
+
+        <div class="top-cities-section">
+            <h3>⚠️ Top 3 Most Polluted Cities (From History)</h3>
+            <div id="topCitiesList" class="top-cities-container">
+                <p>Loading...</p>
+            </div>
+        </div>
+    
+
+  <div class="footer-section">
+            <p class="footer-title">🚀 Created by <strong>Group 16</strong></p>
+            <div class="member-tags">
+                <span class="tag">K L S Chandrasena (ITBIN-2211-0158)</span>
+                <span class="tag">G R H S C Etampawala (ITBIN-2211-0186)</span>
+                <span class="tag">R M K C Ranathunga (ITBIN-2211-0270)</span>
+                <span class="tag">I D D R Dharmarathne (ITBIN-2211-0174)</span>
+            </div>
+        </div>
+     </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
